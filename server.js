@@ -17,6 +17,7 @@ app.use(
   })
 );
 
+
 app.use(
   cors({
     origin: process.env.IP_FRONTEND, 
