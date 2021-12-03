@@ -73,8 +73,22 @@ const escalaSchema = new mongoose.Schema({
 
 const Escala = new mongoose.model("Escala", escalaSchema);
 
+function allowCors(res) {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  )
+}
+
+
 //DEFAULT HOME PAGE
 app.get("/", (req, res) => {
+  allowCors(res)
   User.find({}, (err, foundUsers) => {
     if (!err) {
       const toSend = {
@@ -89,6 +103,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/admin", (req, res) => {
+  allowCors(res)
   if (req.isAuthenticated()) {
     User.find({}, (err, foundUsers) => {
       if (!err) {
@@ -107,6 +122,7 @@ app.get("/admin", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  allowCors(res)
   if (req.isAuthenticated()) {
   } else {
     res.send(false);
@@ -122,6 +138,7 @@ app.get("/register", (req, res) => {
 //console.log(now.toLocaleDateString('pt-BR', options));
 
 app.get("/escalas", (req, res)=> {
+  allowCors(res)
   let loggedUser = null;
   if (req.isAuthenticated()) {
     loggedUser = req.user;
@@ -137,6 +154,7 @@ app.get("/escalas", (req, res)=> {
 })
 
 app.post("/escalas", (req, res)=> {
+  allowCors(res)
   if (req.isAuthenticated()) {
     let optionsMonth = { month: "long" };
     let datereceived = new Date(req.query.data);
@@ -164,6 +182,7 @@ app.post("/escalas", (req, res)=> {
 })
 
 app.get("/logout", (req, res) => {
+  allowCors(res)
   if (req.isAuthenticated()) {
     req.logout();
     res.send(false);
@@ -171,6 +190,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/login", (req, res, next) => {
+  allowCors(res)
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       throw err;
@@ -186,11 +206,6 @@ app.post("/login", (req, res, next) => {
       });
     }
   })(req, res, next);
-});
-
-app.get("/logout", function (req, res) {
-  req.logout();
-  res.send(false);
 });
 
 app.listen(process.env.PORT || 4000, () => {
